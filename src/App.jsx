@@ -1,8 +1,8 @@
 import './App.css'
 
-const BhosduButton = () => {
+const Card = ({title}) => {
   return(
-    <button>Click me</button>
+    <p>{title}</p>
   )
 }
 
@@ -11,7 +11,8 @@ const App = () => {
   return(
     <>
       <h2>Dhruv Temura</h2>
-      <BhosduButton></BhosduButton>
+      <Card title='dead reckoning'/>
+      <Card title='conjuring 4'/>
     </>
   )
 }
