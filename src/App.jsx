@@ -10,32 +10,41 @@ const API_OPTIONS = {
   method: 'GET',
   headers: {
     accept: 'applications/json',
-    Authorization: `Bearer${API_KEY}`
+    Authorization: `Bearer ${API_KEY}`
   }
 }
 
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [movieList, setMovieList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchMovies = async () => {
-    try{
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+  setIsLoading(true);
+  setErrorMessage('');
 
-      const response = await fetch(endpoint, API_OPTIONS);
+  try {
+    const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&api_key=${API_KEY}`;
 
-      if(!response.ok){
-        throw new Error('Failed to fetch movies');
-      }
+    const response = await fetch(endpoint); // no API_OPTIONS
 
-      const data = await response.json();
-
-      console.log(data);
-    } catch(error){
-      console.error(`Error fetching movies: ${error}`);
-      setErrorMessage('Error fetching movies. Please try again later');
+    if (!response.ok) {
+      throw new Error('Failed to fetch movies');
     }
+
+    const data = await response.json();
+
+    setMovieList(data.results || []);
+  } catch (error) {
+    console.error(`Error fetching movies: ${error}`);
+    setErrorMessage('Error fetching movies. Please try again later');
+  } finally {
+    setIsLoading(false);
   }
+};
+
 
   useEffect(() => {
     fetchMovies();
@@ -55,7 +64,19 @@ const App = () => {
 
         <section className='all-movies'>
           <h2>All Movies</h2>
-          {/*{errorMessage && <p className='text-red-500'>{errorMessage}</p>}*/}
+          {isLoading ? (
+            <p className='text-white'>Loading...</p>
+          ) : errorMessage ? (
+            <p className='text-red-500'>{errorMessage}</p>
+          ) : (
+            <ul>
+              {movieList.map((movie) => {
+                return(
+                  <p className='text-white'>{movie.title}</p>
+                )
+              })}
+            </ul>
+          )}
         </section>
 
         
